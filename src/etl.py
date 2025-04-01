@@ -17,3 +17,9 @@ df.shape
 df.columns
 #Mostramos los tipos de datos del dataframe
 df.dtypes
+
+#Eliminamos las columnas y filas que no nos interesan como Unnamed y NaN
+df.drop(columns=['Unnamed: 0', 'Unnamed: 1'], inplace=True)
+df.dropna(inplace=True)
+#Mostramos el dataframe 
+print(df.head(10))
