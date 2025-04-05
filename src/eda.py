@@ -46,22 +46,28 @@ ambos_sexos_cleaned = ambos_sexos.drop(columns=['Puesto'])
 hombres_cleaned = hombres.drop(columns=['Puesto'])
 mujeres_cleaned = mujeres.drop(columns=['Puesto'])
 
-# Asegurémonos de que no haya NaN en los trimestres
-hombres_2024T4_cleaned = hombres_cleaned['2024T4'].dropna()
-mujeres_2024T4_cleaned = mujeres_cleaned['2024T4'].dropna()
+# Verificar que las longitudes de los datos de hombres y mujeres sean iguales y que estén alineadas
+print(f"Longitud de datos de Hombres 2024T4: {len(hombres_cleaned)}")
+print(f"Longitud de datos de Mujeres 2024T4: {len(mujeres_cleaned)}")
 
-# Verificar las longitudes de los datos
-print(f"Longitud de '2024T4' en Hombres después de dropna: {len(hombres_2024T4_cleaned)}")
-print(f"Longitud de '2024T4' en Mujeres después de dropna: {len(mujeres_2024T4_cleaned)}")
+# Asegurarse de que ambos conjuntos de datos no tengan NaN y estén alineados
+hombres_2024T4_cleaned = hombres_cleaned.dropna()
+mujeres_2024T4_cleaned = mujeres_cleaned.dropna()
+
+# Verificar que las longitudes coinciden después de eliminar NaN
+print(f"Longitud de Hombres 2024T4 después de dropna: {len(hombres_2024T4_cleaned)}")
+print(f"Longitud de Mujeres 2024T4 después de dropna: {len(mujeres_2024T4_cleaned)}")
 
 # Crear el gráfico de caja con los datos de Hombres y Mujeres
-plt.figure(figsize=(14, 6))
+if len(hombres_2024T4_cleaned) == len(mujeres_2024T4_cleaned):
+    plt.figure(figsize=(14, 6))
 
-# Boxplot para los trimestres de 2024T4
-sns.boxplot(data=[hombres_2024T4_cleaned, mujeres_2024T4_cleaned], labels=['Hombres', 'Mujeres'], palette="Set2")
-plt.title('Distribución de Trimestres 2024T4 (Hombres vs Mujeres)')
-plt.xlabel('Género')
-plt.ylabel('Valor')
+    sns.boxplot(data=[hombres_2024T4_cleaned, mujeres_2024T4_cleaned], labels=['Hombres', 'Mujeres'], palette="Set2")
+    plt.title('Distribución de Trimestres 2024T4 (Hombres vs Mujeres)')
+    plt.xlabel('Género')
+    plt.ylabel('Valor')
 
-plt.tight_layout()
-plt.show()
+    plt.tight_layout()
+    plt.show()
+else:
+    print("Las longitudes de los datos de Hombres y Mujeres no coinciden después de limpiar NaN.")
