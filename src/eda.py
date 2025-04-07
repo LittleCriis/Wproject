@@ -8,27 +8,11 @@ hombres = pd.read_csv('C:/Users/Cristina/Desktop/MASTER DATA/Python/Wproject/dat
 mujeres = pd.read_csv('C:/Users/Cristina/Desktop/MASTER DATA/Python/Wproject/data/Mujeres.csv', sep=';', encoding='ISO-8859-1')
 
 # Mostrar las primeras filas de cada dataset para entender su estructura
-ambos_sexos.head(), hombres.head(), mujeres.head()
+print(ambos_sexos.head())
+print(hombres.head())
+print(mujeres.head())
 
-# Revisar las dimensiones de cada dataset
-ambos_sexos_shape = ambos_sexos.shape
-hombres_shape = hombres.shape
-mujeres_shape = mujeres.shape
-
-# Calcular estadísticas descriptivas para cada uno
-ambos_sexos_desc = ambos_sexos.describe()
-hombres_desc = hombres.describe()
-mujeres_desc = mujeres.describe()
-
-# Verificar si existen columnas no numéricas que debemos excluir para las estadísticas
-ambos_sexos_non_numeric = ambos_sexos.select_dtypes(exclude=['number']).columns
-hombres_non_numeric = hombres.select_dtypes(exclude=['number']).columns
-mujeres_non_numeric = mujeres.select_dtypes(exclude=['number']).columns
-
-# Mostrar la información relevante
-print(ambos_sexos_shape, hombres_shape, mujeres_shape, ambos_sexos_desc.head(), hombres_desc.head(), mujeres_desc.head(), ambos_sexos_non_numeric, hombres_non_numeric, mujeres_non_numeric)
-
-# Convertir las columnas de los trimestres a tipo float
+# Convertir las columnas de trimestres a tipo float para ambos_sexos, hombres y mujeres
 for col in ambos_sexos.columns:
     if 'T' in col:  # Asegurarse de que solo estamos seleccionando las columnas de trimestres
         ambos_sexos[col] = pd.to_numeric(ambos_sexos[col].str.replace(',', '', regex=False), errors='coerce')
@@ -46,28 +30,45 @@ ambos_sexos_cleaned = ambos_sexos.drop(columns=['Puesto'])
 hombres_cleaned = hombres.drop(columns=['Puesto'])
 mujeres_cleaned = mujeres.drop(columns=['Puesto'])
 
-# Verificar que las longitudes de los datos de hombres y mujeres sean iguales y que estén alineadas
-print(f"Longitud de datos de Hombres 2024T4: {len(hombres_cleaned)}")
-print(f"Longitud de datos de Mujeres 2024T4: {len(mujeres_cleaned)}")
+# Calcular las métricas para Hombres
+hombres_cleaned['media'] = hombres_cleaned.mean(axis=1)
+hombres_cleaned['mediana'] = hombres_cleaned.median(axis=1)
+hombres_cleaned['moda'] = hombres_cleaned.mode(axis=1)[0]
+hombres_cleaned['desviacion_estandar'] = hombres_cleaned.std(axis=1)
 
-# Asegurarse de que ambos conjuntos de datos no tengan NaN y estén alineados
-hombres_2024T4_cleaned = hombres_cleaned.dropna()
-mujeres_2024T4_cleaned = mujeres_cleaned.dropna()
+# Calcular las métricas para Mujeres
+mujeres_cleaned['media'] = mujeres_cleaned.mean(axis=1)
+mujeres_cleaned['mediana'] = mujeres_cleaned.median(axis=1)
+mujeres_cleaned['moda'] = mujeres_cleaned.mode(axis=1)[0]
+mujeres_cleaned['desviacion_estandar'] = mujeres_cleaned.std(axis=1)
 
-# Verificar que las longitudes coinciden después de eliminar NaN
-print(f"Longitud de Hombres 2024T4 después de dropna: {len(hombres_2024T4_cleaned)}")
-print(f"Longitud de Mujeres 2024T4 después de dropna: {len(mujeres_2024T4_cleaned)}")
+# Verificar las primeras filas después de agregar las métricas
+print(hombres_cleaned[['media', 'mediana', 'moda', 'desviacion_estandar']].head())
+print(mujeres_cleaned[['media', 'mediana', 'moda', 'desviacion_estandar']].head())
 
-# Crear el gráfico de caja con los datos de Hombres y Mujeres
-if len(hombres_2024T4_cleaned) == len(mujeres_2024T4_cleaned):
-    plt.figure(figsize=(14, 6))
+# Asegurarnos de que las longitudes de Hombres y Mujeres coincidan
+min_length = min(len(hombres_cleaned), len(mujeres_cleaned))
 
-    sns.boxplot(data=[hombres_2024T4_cleaned, mujeres_2024T4_cleaned], labels=['Hombres', 'Mujeres'], palette="Set2")
-    plt.title('Distribución de Trimestres 2024T4 (Hombres vs Mujeres)')
-    plt.xlabel('Género')
-    plt.ylabel('Valor')
+# Redimensionar ambos conjuntos de datos para tener la misma longitud
+hombres_cleaned = hombres_cleaned.head(min_length)
+mujeres_cleaned = mujeres_cleaned.head(min_length)
 
-    plt.tight_layout()
-    plt.show()
-else:
-    print("Las longitudes de los datos de Hombres y Mujeres no coinciden después de limpiar NaN.")
+# Crear el DataFrame unificado para las métricas de Hombres y Mujeres
+boxplot_data = pd.DataFrame({
+    'Hombres': hombres_cleaned['media'].values,
+    'Mujeres': mujeres_cleaned['media'].values
+})
+
+# Verificar la estructura de los datos antes de graficar
+print(boxplot_data.head())
+
+# Crear el gráfico de caja para la media comparando Hombres y Mujeres
+plt.figure(figsize=(14, 6))
+
+sns.boxplot(data=boxplot_data, palette="Set2")
+plt.title('Distribución de la Media por Puesto (Hombres vs Mujeres)')
+plt.xlabel('Género')
+plt.ylabel('Valor')
+
+plt.tight_layout()
+plt.show()
