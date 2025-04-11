@@ -1,4 +1,6 @@
-import pandas as pd 
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
+pandas==1.5.3
+numpy==1.23.5
+matplotlib==3.7.1
+seaborn==0.11.2
+scipy==1.9.3
+statsmodels==0.13.2
